@@ -6,6 +6,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Step 1: Get the transcript from the request
     const { transcript } = await request.json();
     
+  const currentDate = new Date().toLocaleDateString('en-GB');
+
     // Step 2: Create Gemini client
     const genAI = new GoogleGenerativeAI(import.meta.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });  // ← HERE!
@@ -39,7 +41,7 @@ CT SCAN CORONARY ANGIOGRAM
 NAME    : [extract if mentioned, otherwise leave blank]
 AGE/SEX : [extract if mentioned, otherwise leave blank]
 REF BY  : [extract if mentioned, otherwise "DR. ________"]
-DATE    : ${new Date().toLocaleDateString('en-GB')}
+DATE    : ${currentDate}
 OP NO   : [extract patient ID/number if mentioned, otherwise leave blank]
 
 TECHNIQUE:
@@ -84,10 +86,10 @@ IMPRESSION:
 [Format example:]
 1. [Dominance type] circulation
 2. Calcium score: [number]
-3. LAD: [finding if abnormal]
-4. LCX: [finding if abnormal]
-5. RCA: [finding if abnormal]
-6. CAD-RADS: [score if mentioned]
+3. LAD: finding if abnormal
+4. LCX: finding if abnormal
+5. RCA: finding if abnormal
+6. CAD-RADS: score if mentioned
 
 TRANSCRIPT TO ANALYZE:
 ${transcript}
