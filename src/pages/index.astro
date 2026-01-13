@@ -249,6 +249,10 @@
 					
 					if (!transcribeRes.ok) throw new Error('Transcription failed');
 					const { transcript } = await transcribeRes.json();
+
+					const { transcript } = await transcribeRes.json();
+					console.log("=== TRANSCRIPT ===");
+					console.log(transcript);
 					
 					// Step 2: Generate report
 					status.innerHTML = '<span class="spinner"></span> Step 2/3: Generating report with AI...';
@@ -261,7 +265,9 @@
 					
 					if (!reportRes.ok) throw new Error('Report generation failed');
 					const { report } = await reportRes.json();
-					
+					const { report } = await reportRes.json();
+					console.log("\n=== REPORT ===");
+					console.log(report);
 					// Step 3: Create PDF
 					status.innerHTML = '<span class="spinner"></span> Step 3/3: Creating PDF...';
 					
