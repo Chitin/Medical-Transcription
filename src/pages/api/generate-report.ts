@@ -1,4 +1,17 @@
-const prompt = `You are an expert medical transcriptionist specializing in cardiac CT reports. Your job is to extract ALL findings from the audio transcript and format them into a structured report.
+import type { APIRoute } from 'astro';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    // Step 1: Get the transcript from the request
+    const { transcript } = await request.json();
+    
+    // Step 2: Create Gemini client
+    const genAI = new GoogleGenerativeAI(import.meta.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });  // ← HERE!
+    
+    // Step 3: Create the prompt for Gemini
+    const prompt = `You are an expert medical transcriptionist specializing in cardiac CT reports. Your job is to extract ALL findings from the audio transcript and format them into a structured report.
 
 CRITICAL INSTRUCTIONS:
 1. READ THE ENTIRE TRANSCRIPT CAREFULLY - do not miss any findings
@@ -84,3 +97,21 @@ REMINDER:
 - If findings appear after "LCX: Normal", they likely belong to RCA
 - Use the sequential order: LMCA → LAD → LCX → RCA to assign ambiguous findings
 - Extract EVERYTHING accurately`;
+    
+    // Step 4: Send to Gemini and get response
+    const result = await model.generateContent(prompt);
+    const report = result.response.text();
+    
+    // Step 5: Return the report
+    return new Response(JSON.stringify({ report }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+  } catch (error) {
+    console.error('Report generation error:', error);
+    return new Response(JSON.stringify({ error: 'Report generation failed' }), {
+      status: 500
+    });
+  }
+};
