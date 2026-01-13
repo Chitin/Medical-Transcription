@@ -23,6 +23,20 @@ export const POST: APIRoute = async ({ request }) => {
         model: 'nova-3-medical',
         smart_format: true,
         punctuate: true,
+        keywords: [
+      'stenosis:2',
+      'calcified plaque:2',
+      'non-calcified plaque:2',
+      'occlusion:2',
+      'LAD:2',
+      'LCX:2',
+      'RCA:2',
+      'LMCA:2',
+      'calcium score:2',
+      'CAD-RADS:2',
+      'right dominant:2',
+      'left dominant:2'
+        ]
       }
     );
     
