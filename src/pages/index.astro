@@ -7,17 +7,37 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Medical Transcription System</title>
+		<title>Medical Transcription AI</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+		
 		<style>
+			:root {
+				--primary: #4F46E5; /* Indigo 600 */
+				--primary-hover: #4338ca;
+				--success: #10B981;
+				--surface: #ffffff;
+				--bg: #F3F4F6;
+				--text-main: #111827;
+				--text-sub: #6B7280;
+				--border: #E5E7EB;
+				--radius: 12px;
+				--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+			}
+
 			* {
 				margin: 0;
 				padding: 0;
-				box-sizing: border-box;
+				[cite_start]box-sizing: border-box[cite: 2];
 			}
 			
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				font-family: 'Inter', sans-serif;
+				background-color: var(--bg);
+				background-image: radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%),
+								  radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+				color: var(--text-main);
 				min-height: 100vh;
 				display: flex;
 				align-items: center;
@@ -25,219 +45,331 @@
 				padding: 20px;
 			}
 			
-			.container {
-				background: white;
-				border-radius: 16px;
-				box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-				max-width: 600px;
+			.app-card {
+				background: var(--surface);
+				border-radius: 20px;
+				box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+				max-width: 550px;
 				width: 100%;
-				padding: 40px;
+				overflow: hidden;
+				border: 1px solid rgba(255,255,255,0.8);
+			}
+
+			.header {
+				padding: 40px 40px 20px 40px;
+				text-align: center;
+			}
+
+			.icon-wrapper {
+				width: 56px;
+				height: 56px;
+				background: #EEF2FF;
+				border-radius: 16px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin: 0 auto 20px auto;
+				color: var(--primary);
 			}
 			
 			h1 {
-				color: #333;
-				font-size: 28px;
-				margin-bottom: 10px;
-				text-align: center;
+				font-size: 24px;
+				font-weight: 600;
+				color: var(--text-main);
+				letter-spacing: -0.02em;
+				margin-bottom: 8px;
 			}
 			
 			.subtitle {
-				color: #666;
+				color: var(--text-sub);
+				font-size: 15px;
+				line-height: 1.5;
+			}
+
+			.content {
+				padding: 0 40px 40px 40px;
+			}
+			
+			/* Modern Upload Area */
+			.upload-zone {
+				border: 2px dashed var(--border);
+				border-radius: var(--radius);
+				padding: 32px 20px;
 				text-align: center;
-				margin-bottom: 30px;
+				background: #FAFAFA;
+				transition: all 0.2s ease;
+				cursor: pointer;
+				position: relative;
+				margin-bottom: 24px;
+			}
+			
+			.upload-zone:hover {
+				border-color: var(--primary);
+				background: #EEF2FF;
+			}
+			
+			.upload-zone.has-file {
+				border-style: solid;
+				border-color: var(--success);
+				background: #ECFDF5;
+			}
+
+			.upload-icon {
+				font-size: 32px;
+				margin-bottom: 12px;
+				display: block;
+			}
+
+			.upload-text {
 				font-size: 14px;
+				font-weight: 500;
+				color: var(--primary);
 			}
-			
-			.upload-area {
-				border: 3px dashed #667eea;
-				border-radius: 12px;
-				padding: 40px;
-				text-align: center;
-				background: #f8f9ff;
-				margin-bottom: 20px;
-				transition: all 0.3s;
-			}
-			
-			.upload-area:hover {
-				border-color: #764ba2;
-				background: #f0f1ff;
-			}
-			
-			.upload-area.has-file {
-				border-color: #10b981;
-				background: #f0fdf4;
+
+			.file-details {
+				margin-top: 8px;
+				font-size: 13px;
+				color: var(--success);
+				font-weight: 600;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 6px;
 			}
 			
 			input[type="file"] {
 				display: none;
 			}
-			
-			.file-label {
-				display: inline-block;
-				background: #667eea;
-				color: white;
-				padding: 12px 30px;
-				border-radius: 8px;
-				cursor: pointer;
-				font-weight: 600;
-				transition: all 0.3s;
-			}
-			
-			.file-label:hover {
-				background: #764ba2;
-				transform: translateY(-2px);
-				box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-			}
-			
-			.file-info {
-				margin-top: 15px;
-				color: #10b981;
-				font-weight: 600;
-			}
-			
-			button {
+
+			/* Process Button */
+			.btn-primary {
 				width: 100%;
-				background: #667eea;
+				background: var(--primary);
 				color: white;
 				border: none;
-				padding: 16px;
-				border-radius: 8px;
-				font-size: 16px;
-				font-weight: 600;
+				padding: 14px;
+				border-radius: var(--radius);
+				font-size: 15px;
+				font-weight: 500;
 				cursor: pointer;
-				transition: all 0.3s;
-				margin-bottom: 10px;
-			}
-			
-			button:hover:not(:disabled) {
-				background: #764ba2;
-				transform: translateY(-2px);
-				box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-			}
-			
-			button:disabled {
-				background: #cbd5e1;
-				cursor: not-allowed;
-				transform: none;
-			}
-			
-			button.download-btn {
-				background: #10b981;
-			}
-			
-			button.download-btn:hover {
-				background: #059669;
-			}
-			
-			.status {
-				background: #f1f5f9;
-				padding: 15px;
-				border-radius: 8px;
-				margin-top: 20px;
-				text-align: center;
-				min-height: 60px;
+				transition: all 0.2s;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				gap: 8px;
+				box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
 			}
 			
-			.status.loading {
-				background: #dbeafe;
-				color: #1e40af;
+			.btn-primary:hover:not(:disabled) {
+				background: var(--primary-hover);
+				transform: translateY(-1px);
 			}
 			
-			.status.success {
-				background: #d1fae5;
-				color: #065f46;
+			.btn-primary:disabled {
+				background: #E5E7EB;
+				color: #9CA3AF;
+				cursor: not-allowed;
+				box-shadow: none;
 			}
-			
-			.status.error {
-				background: #fee2e2;
-				color: #991b1b;
+
+			/* Download Button Variant */
+			.btn-download {
+				background: var(--success);
+				margin-top: 16px;
+				box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
 			}
-			
-			.spinner {
-				display: inline-block;
-				width: 16px;
-				height: 16px;
-				border: 2px solid #1e40af;
-				border-top-color: transparent;
+			.btn-download:hover {
+				background: #059669;
+			}
+
+			/* Progress Stepper */
+			.stepper {
+				margin-top: 30px;
+				border-top: 1px solid var(--border);
+				padding-top: 24px;
+				display: none; /* Hidden by default */
+			}
+
+			.stepper.active {
+				display: block;
+			}
+
+			.step-item {
+				display: flex;
+				align-items: center;
+				margin-bottom: 12px;
+				font-size: 14px;
+				color: var(--text-sub);
+				opacity: 0.5;
+				transition: all 0.3s;
+			}
+
+			.step-item.active {
+				opacity: 1;
+				color: var(--primary);
+				font-weight: 500;
+			}
+
+			.step-item.completed {
+				opacity: 1;
+				color: var(--success);
+			}
+
+			.step-icon {
+				width: 24px;
+				height: 24px;
 				border-radius: 50%;
-				animation: spin 0.6s linear infinite;
-				margin-right: 8px;
+				background: #E5E7EB;
+				margin-right: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 10px;
 			}
-			
+
+			.step-item.active .step-icon {
+				background: var(--primary);
+				color: white;
+				box-shadow: 0 0 0 3px #EEF2FF;
+			}
+
+			.step-item.completed .step-icon {
+				background: var(--success);
+				color: white;
+			}
+
+			/* Spinner */
+			.spinner {
+				width: 12px;
+				height: 12px;
+				border: 2px solid rgba(255,255,255,0.3);
+				border-top-color: white;
+				border-radius: 50%;
+				animation: spin 0.8s linear infinite;
+			}
+
 			@keyframes spin {
 				to { transform: rotate(360deg); }
 			}
 			
-			.hidden {
-				display: none !important;
-			}
+			.hidden { display: none !important; }
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<h1>Medical Transcription System</h1>
-			<p class="subtitle">Convert audio recordings to formatted medical reports</p>
-			
-			<div class="upload-area" id="uploadArea">
-				<label for="audioInput" class="file-label">
-					📁 Choose Audio File
-				</label>
-				<input type="file" id="audioInput" accept="audio/*,video/*,.m4a,.mp3,.wav,.aac,.ogg,.webm,.mp4" multiple="false">
-				<div id="fileInfo" class="file-info hidden"></div>
+		<div class="app-card">
+			<div class="header">
+				<div class="icon-wrapper">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h5l2 9 5-18 4 13h4"/></svg>
+				</div>
+				<h1>Medical Transcription AI</h1>
+				<p class="subtitle">Securely convert patient audio recordings into professionally formatted PDF reports.</p>
 			</div>
 			
-			<button id="processBtn" disabled>
-				🔄 Process Audio → Generate Report
-			</button>
-			
-			<button id="downloadBtn" class="download-btn hidden">
-				⬇️ Download PDF Report
-			</button>
-			
-			<div id="status" class="status">
-				Select an audio file to begin
+			<div class="content">
+				<div class="upload-zone" id="uploadArea" onclick="document.getElementById('audioInput').click()">
+					<span class="upload-icon">📁</span>
+					<div id="uploadText" class="upload-text">Click to select audio file</div>
+					<div id="fileInfo" class="file-details hidden"></div>
+					<input type="file" id="audioInput" accept="audio/*,video/*,.m4a,.mp3,.wav,.aac,.ogg,.webm,.mp4" multiple="false">
+				</div>
+				
+				<button id="processBtn" class="btn-primary" disabled>
+					<span>Start Processing</span>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+				</button>
+				
+				<button id="downloadBtn" class="btn-primary btn-download hidden">
+					<span>Download PDF Report</span>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+				</button>
+
+				<div id="stepper" class="stepper">
+					<div class="step-item" id="step1">
+						<div class="step-icon">1</div>
+						<span>Transcribing Audio</span>
+					</div>
+					<div class="step-item" id="step2">
+						<div class="step-icon">2</div>
+						<span>Generating Clinical Report</span>
+					</div>
+					<div class="step-item" id="step3">
+						<div class="step-icon">3</div>
+						<span>Finalizing PDF</span>
+					</div>
+				</div>
 			</div>
 		</div>
 
 		<script>
 			const fileInput = document.getElementById('audioInput');
 			const uploadArea = document.getElementById('uploadArea');
+			const uploadText = document.getElementById('uploadText');
 			const fileInfo = document.getElementById('fileInfo');
 			const processBtn = document.getElementById('processBtn');
 			const downloadBtn = document.getElementById('downloadBtn');
-			const status = document.getElementById('status');
+			const stepper = document.getElementById('stepper');
 			
+			// Steps UI
+			const step1 = document.getElementById('step1');
+			const step2 = document.getElementById('step2');
+			const step3 = document.getElementById('step3');
+
 			let selectedFile = null;
 			let pdfBlob = null;
 			
-			// File selection
+			// Helper to reset UI
+			const resetSteps = () => {
+				[step1, step2, step3].forEach(el => {
+					el.className = 'step-item';
+					el.querySelector('.step-icon').textContent = el.id.replace('step', '');
+				});
+				stepper.classList.remove('active');
+			};
+
+			// Helper to set step state
+			const setStepStatus = (stepEl, status) => {
+				// status: 'active' | 'completed'
+				stepEl.classList.remove('active', 'completed');
+				stepEl.classList.add(status);
+				const icon = stepEl.querySelector('.step-icon');
+				
+				if (status === 'completed') {
+					icon.textContent = '✓';
+				} else if (status === 'active') {
+					icon.innerHTML = '<div class="spinner"></div>';
+				}
+			};
+
+			[cite_start]// File selection logic [cite: 17]
 			fileInput.addEventListener('change', (e) => {
 				selectedFile = e.target.files[0];
 				if (selectedFile) {
 					uploadArea.classList.add('has-file');
+					uploadText.classList.add('hidden');
 					fileInfo.classList.remove('hidden');
-					fileInfo.textContent = `✓ ${selectedFile.name} (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)`;
+					// Clean file size display
+					fileInfo.innerHTML = `
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+						${selectedFile.name} <span style="opacity:0.7; font-weight:400; margin-left:4px">(${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+					`;
 					processBtn.disabled = false;
-					status.className = 'status';
-					status.textContent = 'Ready to process!';
 					downloadBtn.classList.add('hidden');
+					processBtn.classList.remove('hidden');
+					resetSteps();
 				}
 			});
-			
-			// Process button
+
+			[cite_start]// Process button logic [cite: 18]
 			processBtn.addEventListener('click', async () => {
 				if (!selectedFile) return;
 				
 				processBtn.disabled = true;
 				downloadBtn.classList.add('hidden');
+				stepper.classList.add('active'); // Show stepper
 				
 				try {
 					// Step 1: Transcribe
-					status.className = 'status loading';
-					status.innerHTML = '<span class="spinner"></span> Step 1/3: Transcribing audio...';
+					setStepStatus(step1, 'active');
 					
 					const formData = new FormData();
 					formData.append('audio', selectedFile);
@@ -249,12 +381,11 @@
 					
 					if (!transcribeRes.ok) throw new Error('Transcription failed');
 					const { transcript } = await transcribeRes.json();
-
-					console.log("=== TRANSCRIPT ===");
-					console.log(transcript);
 					
+					setStepStatus(step1, 'completed'); // Mark step 1 done
+
 					// Step 2: Generate report
-					status.innerHTML = '<span class="spinner"></span> Step 2/3: Generating report with AI...';
+					setStepStatus(step2, 'active');
 					
 					const reportRes = await fetch('/api/generate-report', {
 						method: 'POST',
@@ -262,36 +393,38 @@
 						body: JSON.stringify({ transcript })
 					});
 					
-					if (!reportRes.ok) throw new Error('Report generation failed');
+					[cite_start]if (!reportRes.ok) throw new Error('Report generation failed [cite: 19]');
 					const { report } = await reportRes.json();
-					console.log("\n=== REPORT ===");
-					console.log(report);
-					// Step 3: Create PDF
-					status.innerHTML = '<span class="spinner"></span> Step 3/3: Creating PDF...';
 					
+					setStepStatus(step2, 'completed'); // Mark step 2 done
+
+					// Step 3: Create PDF
+					setStepStatus(step3, 'active');
+
 					const pdfRes = await fetch('/api/create-pdf', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ report })
 					});
 					
-					if (!pdfRes.ok) throw new Error('PDF creation failed');
+					[cite_start]if (!pdfRes.ok) throw new Error('PDF creation failed [cite: 22]');
 					pdfBlob = await pdfRes.blob();
 					
-					// Success!
-					status.className = 'status success';
-					status.textContent = '✅ Report generated successfully! Click below to download.';
-					downloadBtn.classList.remove('hidden');
-					processBtn.disabled = false;
+					setStepStatus(step3, 'completed'); // Mark step 3 done
 					
-				} catch (error) {
-					status.className = 'status error';
-					status.textContent = `❌ Error: ${error.message}`;
+					// Success State
+					processBtn.classList.add('hidden'); // Hide process button
+					downloadBtn.classList.remove('hidden'); // Show download button
 					processBtn.disabled = false;
+
+				} catch (error) {
+					alert(`Error: ${error.message}`); // Simple alert for error in this UI version
+					processBtn.disabled = false;
+					resetSteps();
 				}
 			});
-			
-			// Download button
+
+			[cite_start]// Download button logic [cite: 25]
 			downloadBtn.addEventListener('click', () => {
 				if (!pdfBlob) return;
 				
@@ -303,9 +436,6 @@
 				a.click();
 				document.body.removeChild(a);
 				URL.revokeObjectURL(url);
-				
-				status.className = 'status success';
-				status.textContent = '✅ PDF downloaded! Check your Downloads folder.';
 			});
 		</script>
 	</body>
