@@ -250,7 +250,6 @@
 					if (!transcribeRes.ok) throw new Error('Transcription failed');
 					const { transcript } = await transcribeRes.json();
 
-					const { transcript } = await transcribeRes.json();
 					console.log("=== TRANSCRIPT ===");
 					console.log(transcript);
 					
@@ -264,7 +263,6 @@
 					});
 					
 					if (!reportRes.ok) throw new Error('Report generation failed');
-					const { report } = await reportRes.json();
 					const { report } = await reportRes.json();
 					console.log("\n=== REPORT ===");
 					console.log(report);
