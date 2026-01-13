@@ -1,26 +1,22 @@
-import type { APIRoute } from 'astro';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-export const POST: APIRoute = async ({ request }) => {
-  try {
-    // Step 1: Get the transcript from the request
-    const { transcript } = await request.json();
-    
-    // Step 2: Create Gemini client
-    const genAI = new GoogleGenerativeAI(import.meta.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });  // ← HERE!
-    
-    // Step 3: Create the prompt for Gemini
-    const prompt = `You are an expert medical transcriptionist specializing in cardiac CT reports. Your job is to extract ALL findings from the audio transcript and format them into a structured report.
+const prompt = `You are an expert medical transcriptionist specializing in cardiac CT reports. Your job is to extract ALL findings from the audio transcript and format them into a structured report.
 
 CRITICAL INSTRUCTIONS:
 1. READ THE ENTIRE TRANSCRIPT CAREFULLY - do not miss any findings
 2. Extract EVERY vessel mentioned and its specific findings
 3. If a vessel has abnormalities (stenosis, plaque, occlusion), YOU MUST include it
-4. Only mark vessels as "Normal" if explicitly stated OR if not mentioned at all
-5. Pay special attention to: LAD, LCX, RCA, and all their branches
-6. Extract exact percentages when mentioned (e.g., "50% stenosis", "60% stenosis")
-7. Note specific details like "calcified plaque", "non-calcified plaque", "occlusion"
+4. Pay special attention to: LAD, LCX, RCA, and all their branches
+5. Extract exact percentages when mentioned (e.g., "50% stenosis", "60% stenosis")
+6. Note specific details like "calcified plaque", "non-calcified plaque", "occlusion"
+
+CRITICAL VESSEL ASSIGNMENT RULES:
+- Vessels are typically described in this order: LMCA → LAD → D1 → LCX → OM1/OM2 → RCA → PDA
+- If you see findings like "calcified plaque" or "stenosis" WITHOUT a clear vessel name before it:
+  * Look at what vessels have already been described
+  * The finding belongs to the NEXT vessel in the sequence
+  * Example: "LAD 50% stenosis. LCX normal. Calcified plaque 60% stenosis" 
+    → The "calcified plaque" finding belongs to RCA (next vessel after LCX)
+- NEVER assign findings to the wrong vessel
+- When in doubt, use the sequential order of vessels
 
 FORMAT STRUCTURE:
 
@@ -40,18 +36,18 @@ TECHNIQUE:
 - Non-ionic iodine contrast given intravenously
 
 FINDINGS:
-Calcium score: [EXACT number from transcript - this is CRITICAL, never miss this]
+Calcium score: [EXACT number from transcript - CRITICAL, never miss this]
 
 CORONARY ARTERIES: [extract if mentioned, otherwise "NORMAL ORIGINS"]
 [extract dominance: "RIGHT DOMINANT CIRCULATION" or "LEFT DOMINANT CIRCULATION" or "CO-DOMINANT"]
 
-LMCA : [extract findings - if abnormal findings mentioned, include them; if not mentioned, write "Normal"]
+LMCA : [extract findings - if abnormal findings mentioned, include them; if not mentioned or "normal", write "Normal"]
 LAD  : [CRITICAL - extract ALL findings including stenosis %, plaque type, location]
 D1   : [extract if mentioned, otherwise "Normal"]
 LCX  : [CRITICAL - extract ALL findings including stenosis %, plaque type, location]
 OM1  : [extract if mentioned, otherwise "Normal"]
 OM2  : [only include if mentioned]
-RCA  : [CRITICAL - extract ALL findings including stenosis %, plaque type, occlusion, location]
+RCA  : [CRITICAL - extract ALL findings including stenosis %, plaque type, occlusion, location. Remember: findings after LCX often belong here]
 PDA  : [only include if mentioned]
 PLVB : [only include if mentioned]
 
@@ -69,10 +65,10 @@ VALVES     : [from transcript or "Normal"]
 PERICARDIUM: [from transcript or "Normal"]
 
 IMPRESSION:
-[Create a numbered list summarizing EVERY abnormal finding mentioned]
+[Create a numbered list summarizing EVERY finding]
 [Include: dominance, calcium score, and ALL vessel abnormalities]
 [If CAD-RADS score mentioned, include it]
-[Example format:]
+[Format example:]
 1. [Dominance type] circulation
 2. Calcium score: [number]
 3. LAD: [finding if abnormal]
@@ -83,22 +79,8 @@ IMPRESSION:
 TRANSCRIPT TO ANALYZE:
 ${transcript}
 
-REMINDER: Do NOT skip any vessel findings. If RCA has stenosis, plaque, or occlusion - you MUST include it. If LCX has findings - you MUST include it. Extract EVERYTHING.`;
-    
-    // Step 4: Send to Gemini and get response
-    const result = await model.generateContent(prompt);
-    const report = result.response.text();
-    
-    // Step 5: Return the report
-    return new Response(JSON.stringify({ report }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-    
-  } catch (error) {
-    console.error('Report generation error:', error);
-    return new Response(JSON.stringify({ error: 'Report generation failed' }), {
-      status: 500
-    });
-  }
-};
+REMINDER: 
+- Do NOT skip any vessel findings
+- If findings appear after "LCX: Normal", they likely belong to RCA
+- Use the sequential order: LMCA → LAD → LCX → RCA to assign ambiguous findings
+- Extract EVERYTHING accurately`;
